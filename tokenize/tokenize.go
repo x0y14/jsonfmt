@@ -15,7 +15,7 @@ var lp int // line Position  行での位置
 var wp int // whole Position 全体での位置
 
 func init() {
-	reserves = "{},:"
+	reserves = "{},:[]"
 }
 
 func current() rune {
