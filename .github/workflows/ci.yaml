@@ -11,3 +11,4 @@ jobs:
           cache: true
       - run: |
           go test ./tokenize
+          go test ./parse
