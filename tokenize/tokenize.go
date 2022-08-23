@@ -11,8 +11,8 @@ var reserves string
 var userInput []rune
 
 var l int  // line no        行番号
-var lp int // line position  行での位置
-var wp int // whole position 全体での位置
+var lp int // line Position  行での位置
+var wp int // whole Position 全体での位置
 
 func init() {
 	reserves = "{},:"
@@ -155,5 +155,5 @@ func Tokenize(text string) *Token {
 
 	// 最後だというトークンを追加してあげる
 	NewEOFToken(cur, NewPosition(l, wp, lp))
-	return head.next
+	return head.Next
 }
