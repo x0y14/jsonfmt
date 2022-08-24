@@ -3,85 +3,89 @@ package format
 import (
 	"fmt"
 	"github.com/x0y14/jsonfmt/parse"
-	"log"
 	"strings"
 )
 
-var deps int // 深度
+var lp int   // 行中位置
+var deps int // 深さ
 var configuration *Config
 
 func gen(node *parse.Node) string {
+	var s string
 	switch node.Kind {
 	case parse.NdKV:
-		s := strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
+		// 深さ分インデントをつけてあげる
+		s += strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
 		s += gen(node.Key)
 		s += ": "
 		s += gen(node.Value)
-		return s
 	case parse.NdString:
-		return node.Str
+		s += node.Str
 	case parse.NdNumber:
-		return fmt.Sprintf("%v", node.Number)
+		s += fmt.Sprintf("%v", node.Number)
 	case parse.NdTrue:
-		return "true"
+		s += "true"
 	case parse.NdFalse:
-		return "false"
+		s += "false"
 	case parse.NdNULL:
-		return "null"
-	case parse.NdObject:
-		s := strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
-		s += "{"
-		// 改行をつけてあげる
+		s += "null"
+	case parse.NdObject, parse.NdArray:
+		// もしlpがゼロなら、行の先頭であるので、インデントをつけてあげる
+		if lp == 0 {
+			s += strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
+		}
+
+		if node.Kind == parse.NdObject {
+			s += "{"
+		} else {
+			s += "["
+		}
+
+		// 子要素の数が１以上であれば、深さを１追加
+		// そうでなければ余分な空白が生まれてしまうので無視
+		// {     } みたいな
+		incremented := false
 		if len(node.Children) >= 1 {
 			deps++
+			s += "\n"
+			lp = 0 // 改行したら行中位置を0に
 			defer func() {
 				s += "\n"
-				deps--
+				lp = 0 // 改行したら行中位置を0に
+				// defer内でdeps--すると}の位置がずれる
 			}()
-			s += "\n"
+			incremented = true // depsがマイナスにならないように増加させたよ通知
 		}
-		for i, kv := range node.Children {
-			s += gen(kv)
-			// if is not last one
-			if i != len(node.Children)-1 {
-				s += ", "
-				s += "\n"
-			}
-		}
-		s += strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
-		s += "}"
-		return s
-	case parse.NdArray:
-		s := strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
-		s += "["
-		// 要素があれば
-		if len(node.Children) >= 1 {
-			deps++
-			defer func() {
-				s += "\n"
-				deps--
-			}()
-			s += "\n"
-		}
+
+		// 子要素出力
 		for i, item := range node.Children {
 			s += gen(item)
-			// if is not last one
+			// 最後の要素でなければ,を出力
 			if i != len(node.Children)-1 {
 				s += ", "
-				s += "\n"
 			}
+			s += "\n"
+			lp = 0
 		}
+
+		if incremented {
+			deps--
+		}
+
 		s += strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
-		s += "]"
-		return s
+		if node.Kind == parse.NdObject {
+			s += "}"
+		} else {
+			s += "]"
+		}
 	}
 
-	log.Fatalf("予期せぬノードを発見しました: NodeKind(%d)", node.Kind)
-	return ""
+	// 行中位置を更新してあげる
+	lp = len(s)
+	return s
 }
 
 func Format(config *Config, node *parse.Node) string {
-	deps = 0
 	configuration = config
 	return gen(node)
 }
