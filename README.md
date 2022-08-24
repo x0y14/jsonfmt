@@ -41,6 +41,26 @@ Indentation is based on four spaces, Overwrite the original file with formatted 
 $ ./bin/jsonfmt -w ./samples/sample1.json 
 ```
 
+### before & after using ./samples/sample3.json
+before
+```json
+{"name":  "john", "age": 18, "sex": "male", "come-from": "usa", "weight": 61.2, "height": 175.0, "parent": {},"partner": null, "married": false, "children": []}
+```
+after (./bin/jsonfmt ./samples/sample3.json)
+```json
+{
+  "name": "john", 
+  "age": 18, 
+  "sex": "male", 
+  "come-from": "usa", 
+  "weight": 61.2, 
+  "height": 175, 
+  "parent": {}, 
+  "partner": null, 
+  "married": false, 
+  "children": []
+}
+```
 
 ## flags
 ### mode
