@@ -21,7 +21,7 @@ const outputFilePathDesc = "If set, formatted data will be output on this path (
 
 var indent int
 
-const indentDesc = "Specifies the base indentation for outputting json. Default is 4."
+const indentDesc = "Specifies the base indentation for outputting json. Default is 2."
 
 var printToTerminal bool
 
@@ -30,13 +30,13 @@ const printToTerminalDesc = "Output to terminal, if both overwrite and output ar
 func init() {
 
 	flag.BoolVar(&overwrite, "overwrite", false, overwriteDesc)
-	flag.BoolVar(&overwrite, "ow", false, "shorthand of overwrite")
+	flag.BoolVar(&overwrite, "w", false, "shorthand of overwrite")
 
 	flag.StringVar(&outputFilePath, "output", "", outputFilePathDesc)
 	flag.StringVar(&outputFilePath, "o", "", "shorthand of output")
 
-	flag.IntVar(&indent, "indent", 4, indentDesc)
-	flag.IntVar(&indent, "i", 4, "shorthand of indent")
+	flag.IntVar(&indent, "indent", 2, indentDesc)
+	flag.IntVar(&indent, "i", 2, "shorthand of indent")
 
 	flag.BoolVar(&printToTerminal, "print", true, printToTerminalDesc)
 	flag.BoolVar(&printToTerminal, "p", true, "shorthand of print")
@@ -52,6 +52,16 @@ func main() {
 	// 上書き許可と出力先が同時に設定されていたら、安全のため、上書きをオフにして、出力を有効にする
 	if overwrite && outputFilePath != "" {
 		overwrite = false
+	}
+
+	// 出力先が設定されていたらプリント機能をオフに
+	if outputFilePath != "" {
+		printToTerminal = false
+	}
+
+	// 上書き設定されていたらプリント機能をオフに
+	if overwrite {
+		printToTerminal = false
 	}
 
 	config := &jsonfmt.Config{
