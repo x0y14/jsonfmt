@@ -72,7 +72,10 @@ func gen(node *parse.Node) string {
 			deps--
 		}
 
-		s += strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
+		if len(node.Children) >= 1 {
+			s += strings.Repeat(strings.Repeat(" ", configuration.Indent), deps)
+		}
+
 		if node.Kind == parse.NdObject {
 			s += "}"
 		} else {
