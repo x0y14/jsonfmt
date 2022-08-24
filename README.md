@@ -7,10 +7,14 @@ simple json formatter
 - go 1.19
 
 ## build
+
+clone this repo
 ```shell
-# To place the executable file in the bin directory
 $ git clone https://github.com/x0y14/jsonfmt.git
 $ cd jsonfmt
+```
+go build (To place the executable file in the bin directory)
+```shell
 $ mkdir -p bin
 $ go build -o ./bin/jsonfmt ./cmd/jsonfmt/main.go 
 ```
@@ -20,8 +24,7 @@ $ go build -o ./bin/jsonfmt ./cmd/jsonfmt/main.go
 $ jsonfmt <flags> <args>
 ```
 
-example using ./samples/sample1.json
-
+### example using ./samples/sample1.json
 
 Indentation is based on four spaces, Print only.
 ```shell
@@ -42,12 +45,12 @@ $ ./bin/jsonfmt -w ./samples/sample1.json
 ## flags
 ### mode
 If multiple settings are made, priority is given from the top to the bottom.
-- print / p   
-boolean, default mode
 - output / o  
 boolean,
 - overwrite / w  
 boolean
+- print / p   
+  boolean, default mode
 ### config
 - ident / i  
 int, default is 2

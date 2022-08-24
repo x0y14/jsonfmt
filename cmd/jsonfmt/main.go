@@ -49,19 +49,14 @@ func main() {
 		log.Fatalf("整形対象とするファイルが設定されていません")
 	}
 
-	// 上書き許可と出力先が同時に設定されていたら、安全のため、上書きをオフにして、出力を有効にする
+	// 上書き、出力先どちらかがオンならプリントはオフ
+	if overwrite || outputFilePath != "" {
+		printToTerminal = false
+	}
+
+	// 上書き、出力先どちらもオンなら上書きはオフ
 	if overwrite && outputFilePath != "" {
 		overwrite = false
-	}
-
-	// 出力先が設定されていたらプリント機能をオフに
-	if outputFilePath != "" {
-		printToTerminal = false
-	}
-
-	// 上書き設定されていたらプリント機能をオフに
-	if overwrite {
-		printToTerminal = false
 	}
 
 	config := &jsonfmt.Config{
